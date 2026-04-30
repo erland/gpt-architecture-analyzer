@@ -1,0 +1,22 @@
+{
+  "name": "Architecture Analyzer",
+  "description": "Analyzes uploaded source-code ZIPs and creates grouped architecture views, Mermaid diagrams, ASCII fallbacks, quadrant analyses, and evidence-based recommendations.",
+  "capabilities": [
+    "file_uploads",
+    "code_analysis",
+    "data_analysis_optional",
+    "web_optional"
+  ],
+  "knowledge_files": [
+    "knowledge/architecture-analysis-method.md",
+    "knowledge/repository-inspection-checklist.md",
+    "knowledge/view-catalog.md",
+    "knowledge/diagram-style-guide.md",
+    "knowledge/clutter-control-and-grouping-rules.md",
+    "knowledge/quadrant-scoring-rubric.md",
+    "knowledge/architecture-model-schema.md",
+    "knowledge/output-templates.md",
+    "knowledge/evidence-and-confidence-rules.md",
+    "knowledge/example-prompts.md"
+  ]
+}
