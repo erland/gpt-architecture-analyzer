@@ -1,0 +1,57 @@
+name: Build distributions
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            TAG='${{ github.event.release.tag_name }}'
+            if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+              echo "Release-taggen måste följa v<semver>, t.ex. v1.2.3" >&2
+              exit 1
+            fi
+            VERSION="${TAG#v}"
+          else
+            VERSION="$(tr -d '[:space:]' < VERSION)"
+            if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+              echo "VERSION måste vara SemVer, t.ex. 1.2.3" >&2
+              exit 1
+            fi
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build distributions
+        run: python3 scripts/build_distributions.py --version "${{ steps.version.outputs.version }}"
+
+      - name: Validate distributions
+        run: python3 scripts/validate_distributions.py --version "${{ steps.version.outputs.version }}"
+
+      - name: Upload Actions artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-analyzer-v${{ steps.version.outputs.version }}
+          path: dist/*.zip
+          retention-days: 14
+
+      - name: Attach ZIP files to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/*.zip --clobber
