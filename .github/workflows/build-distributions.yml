@@ -16,11 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install migration validation dependency
-        run: python3 -m pip install pyyaml
+      - name: Install migration validation dependencies
+        run: python3 -m pip install pyyaml pytest
 
       - name: Lint GPT project
         run: python3 scripts/lint_gpt_project.py
+
+      - name: Run deterministic tests
+        run: python3 -m pytest -q -p no:cacheprovider
+
+      - name: Validate instruction-adherence suite
+        run: python3 scripts/validate_instruction_adherence.py
 
       - name: Resolve version
         id: version
