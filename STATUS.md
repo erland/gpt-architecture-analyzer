@@ -8,7 +8,7 @@ The existing Architecture Analyzer behavior and both current distributions are b
 
 ## Migration steps
 
-- [ ] Step 1 – GPT Builder 1.5 project contracts and guided model robustness
+- [x] Step 1 – GPT Builder 1.5 project contracts and guided model robustness
 - [ ] Step 2 – Deterministic tests and instruction-adherence evals
 - [ ] Step 3 – Claude Projects and OpenCode peer distributions
 - [ ] Step 4 – Generalized runtime parity and release pipeline
@@ -22,11 +22,13 @@ The existing Architecture Analyzer behavior and both current distributions are b
 - OpenCode: ready / planned
 - OpenAI Plugin: reduced / inactive
 
+## Verification of step 1
+
+CI passed the new GPT project lint, the existing distribution build and the existing distribution validation. `canonical/instructions.md` remains byte-for-byte identical to `gpt-instructions.txt`, and all ten Knowledge files remain in place.
+
 ## Current step
 
-**Step 1 – GPT Builder 1.5 project contracts and guided model robustness.**
-
-The step is not complete until CI verifies the new project model without breaking the existing Chat and Custom GPT distributions.
+**Step 2 – Deterministic tests and instruction-adherence evals.**
 
 ## Blockers
 
