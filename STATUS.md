@@ -2,7 +2,7 @@
 
 ## Summary
 
-Migration to **GPT Builder 1.5.0** has started.
+Migration to **GPT Builder 1.5.0** is complete.
 
 The existing Architecture Analyzer behavior and both current distributions are being preserved while a modern canonical/project-contract layer is introduced.
 
@@ -12,7 +12,7 @@ The existing Architecture Analyzer behavior and both current distributions are b
 - [x] Step 2 – Deterministic tests and instruction-adherence evals
 - [x] Step 3 – Claude Projects and OpenCode peer distributions
 - [x] Step 4 – Generalized runtime parity and release pipeline
-- [ ] Step 5 – Final regression, hygiene and release readiness
+- [x] Step 5 – Final regression, hygiene and release readiness
 
 ## Current runtime state
 
@@ -38,10 +38,16 @@ CI passed the four-runtime build and validation. Claude Projects uses the canoni
 
 CI passed generalized runtime parity across all five registered runtimes. The active release set now contains a project ZIP plus Chat, Custom GPT, Claude Projects and OpenCode ZIPs, together with `SHA256SUMS.txt` and `DELIVERY-MANIFEST.json`. GitHub Release uploads the complete set explicitly and uses the release tag as the authoritative version source.
 
-## Current step
+## Verification of step 5
 
-**Step 5 – Final regression, hygiene and release readiness.**
+The final CI run passed project lint, deterministic regression tests, instruction-adherence validation, project plus four runtime builds, distribution validation, runtime parity, release readiness, project hygiene, workflow parity, reproducible delivery and artifact upload.
+
+Documentation drift found during the final review was corrected and regression-tested.
+
+## Current state
+
+The project is in **maintenance mode**. The migration is complete and the PR is ready to merge.
 
 ## Blockers
 
-No known blockers before CI verification.
+None.
