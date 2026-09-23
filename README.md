@@ -64,3 +64,8 @@ DELIVERY-MANIFEST.json
 ```
 
 Taggversionen skrivs även in i `VERSION` inne i respektive distributionspaket och i portable-paketets `MANIFEST.json`.
+
+
+## Validering
+
+CI verifierar projektlint, regressionstester, instruction-adherence, samtliga distributioner, runtime parity, release readiness, project hygiene, workflow parity och reproducerbar leverans.
