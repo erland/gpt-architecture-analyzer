@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import subprocess
@@ -20,7 +21,16 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-parity = subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_runtime_parity.py")], cwd=ROOT)
+ap = argparse.ArgumentParser()
+ap.add_argument("--version")
+args = ap.parse_args()
+version = (args.version or (ROOT / "VERSION").read_text(encoding="utf-8")).strip()
+version = version[1:] if version.startswith("v") else version
+
+parity = subprocess.run(
+    [sys.executable, str(ROOT / "scripts" / "validate_runtime_parity.py"), "--version", version],
+    cwd=ROOT,
+)
 if parity.returncode != 0:
     errors.append("runtime parity failed")
 
@@ -46,7 +56,6 @@ else:
         digest, name = line.split(None, 1)
         checksums[name.strip()] = digest
 
-version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 expected = [
     f"architecture-analyzer-project-v{version}.zip",
     f"architecture-analyzer-chat-v{version}.zip",
