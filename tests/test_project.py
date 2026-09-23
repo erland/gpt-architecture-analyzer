@@ -183,7 +183,7 @@ def test_final_documentation_matches_runtime_state():
         "Runtime parity: `runtime-parity.yaml`",
     ]:
         assert marker in project
-    assert "**Step 5 – Final regression, hygiene and release readiness.**" in plan
+    assert "All migration steps 1–5 are complete and verified." in plan
     assert "**Step 1 – GPT Builder 1.5 project contracts" not in plan.split("## Current next step")[-1]
 
 
