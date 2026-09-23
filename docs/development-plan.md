@@ -69,4 +69,4 @@ Run the complete regression set, all active distribution validators, runtime par
 
 ## Current next step
 
-**Step 1 – GPT Builder 1.5 project contracts and guided model robustness.**
+**Step 5 – Final regression, hygiene and release readiness.**
