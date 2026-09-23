@@ -16,6 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install migration validation dependency
+        run: python3 -m pip install pyyaml
+
+      - name: Lint GPT project
+        run: python3 scripts/lint_gpt_project.py
+
       - name: Resolve version
         id: version
         shell: bash
