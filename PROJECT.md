@@ -22,8 +22,8 @@ Registered peer candidates:
 
 - ChatGPT Chat – ready, active
 - ChatGPT Custom – ready, active
-- Claude Projects – ready, planned
-- OpenCode – ready, planned
+- Claude Projects – ready, active
+- OpenCode – ready, active
 - OpenAI Plugin – reduced, inactive
 
 OpenCode is considered a natural peer for this project because direct local repository/workspace inspection is part of the core use case.
@@ -36,3 +36,6 @@ OpenCode is considered a natural peer for this project because direct local repo
 - Project contract: `gpt-project.yaml`
 - Structured status: `project-status.yaml`
 - Development plan: `docs/development-plan.md`
+
+- Runtime parity: `runtime-parity.yaml`
+- Test manifest: `tests/test-manifest.yaml`
