@@ -123,3 +123,42 @@ def test_build_and_validation_cover_new_peer_distributions():
         assert marker in build
     for marker in ["claude_project", "opencode", "fyra distributioner"]:
         assert marker in validate
+
+
+def test_runtime_parity_model_covers_all_registered_peers():
+    cfg = yaml.safe_load((ROOT / "gpt-project.yaml").read_text(encoding="utf-8"))
+    parity = yaml.safe_load((ROOT / "runtime-parity.yaml").read_text(encoding="utf-8"))
+    expected = {
+        "chatgpt_chat", "chatgpt_custom", "claude_project", "opencode", "openai_plugin"
+    }
+    assert set(cfg["runtime_parity"]["registered_runtimes"]) == expected
+    assert set(parity["registered_runtimes"]) == expected
+    assert set(parity["compared_categories"]) == {
+        "behavior", "capability", "artifact", "workspace_state", "tool"
+    }
+    for runtime_id in {"chatgpt_chat", "chatgpt_custom", "claude_project", "opencode"}:
+        assert parity["runtimes"][runtime_id]["active"] is True
+        assert parity["runtimes"][runtime_id]["suitability"] == "ready"
+    assert parity["runtimes"]["openai_plugin"]["active"] is False
+    assert parity["runtimes"]["openai_plugin"]["suitability"] == "reduced"
+
+
+def test_release_pipeline_publishes_complete_distribution_set():
+    workflow = (ROOT / ".github/workflows/build-distributions.yml").read_text(encoding="utf-8")
+    for marker in [
+        "scripts/validate_runtime_parity.py",
+        "scripts/validate_release_readiness.py",
+        "architecture-analyzer-project-v${VERSION}.zip",
+        "architecture-analyzer-chat-v${VERSION}.zip",
+        "architecture-analyzer-custom-gpt-v${VERSION}.zip",
+        "architecture-analyzer-claude-v${VERSION}.zip",
+        "architecture-analyzer-opencode-v${VERSION}.zip",
+        "dist/SHA256SUMS.txt",
+        "dist/DELIVERY-MANIFEST.json",
+    ]:
+        assert marker in workflow
+
+
+def test_runtime_and_release_validators_exist():
+    assert (ROOT / "scripts/validate_runtime_parity.py").is_file()
+    assert (ROOT / "scripts/validate_release_readiness.py").is_file()
