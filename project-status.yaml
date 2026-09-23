@@ -7,10 +7,11 @@ plan:
   total_steps: 5
 progress:
   current_phase: migration
-  current_step: 2
-  last_completed_step: 1
+  current_step: 3
+  last_completed_step: 2
   completed_steps:
     - 1
+    - 2
   skipped_steps: []
   inserted_steps: []
 state:
@@ -19,11 +20,11 @@ state:
   warnings: []
 validation:
   last_result: pass
-  details: GPT project lint, existing distribution build and existing distribution validation passed on the migration branch.
+  details: GPT project lint, deterministic regression tests, instruction-adherence validation, existing distribution build and existing distribution validation passed on the migration branch.
 next_step:
-  recommended: 2
-  title: Deterministic tests and instruction-adherence evals
-  reason: The GPT Builder 1.5 project model is in place and legacy Chat/Custom distributions remain valid.
+  recommended: 3
+  title: Claude Projects and OpenCode peer distributions
+  reason: Deterministic regression tests and guided instruction-adherence evals are CI-verified; next add Claude Projects and OpenCode from the same canonical contracts.
 resume:
   supported: true
   required_files:
@@ -32,4 +33,4 @@ resume:
     - docs/development-plan.md
     - STATUS.md
     - PROJECT.md
-  human_readable_status: Step 1 is complete and CI-verified. Continue with step 2.
+  human_readable_status: Step 2 is complete and CI-verified. Continue with step 3.
