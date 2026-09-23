@@ -115,8 +115,9 @@ def test_build_and_validation_cover_new_peer_distributions():
     for marker in [
         "def build_claude(",
         "def build_opencode(",
-        "architecture-analyzer-claude-v",
-        "architecture-analyzer-opencode-v",
+        '"claude": build_claude',
+        '"opencode": build_opencode',
+        'f"architecture-analyzer-{name}-v{version}.zip"',
         ".opencode/architecture-analyzer",
     ]:
         assert marker in build
