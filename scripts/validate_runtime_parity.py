@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import json
 import zipfile
 from pathlib import Path
@@ -50,7 +51,11 @@ for runtime_id in INACTIVE:
     check(candidates[runtime_id].get("activate_by_default") is False, f"{runtime_id} must stay inactive")
     check(model.get("runtimes", {}).get(runtime_id, {}).get("active") is False, f"{runtime_id} must be inactive in parity model")
 
-version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+ap = argparse.ArgumentParser()
+ap.add_argument("--version")
+args = ap.parse_args()
+version = (args.version or (ROOT / "VERSION").read_text(encoding="utf-8")).strip()
+version = version[1:] if version.startswith("v") else version
 specs = {
     "chatgpt_chat": (f"architecture-analyzer-chat-v{version}.zip", "assistant/runtime-contract.json", "assistant/instructions.txt"),
     "chatgpt_custom": (f"architecture-analyzer-custom-gpt-v{version}.zip", "runtime-contract.json", "gpt-instructions.txt"),
