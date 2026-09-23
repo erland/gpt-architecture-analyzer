@@ -162,3 +162,35 @@ def test_release_pipeline_publishes_complete_distribution_set():
 def test_runtime_and_release_validators_exist():
     assert (ROOT / "scripts/validate_runtime_parity.py").is_file()
     assert (ROOT / "scripts/validate_release_readiness.py").is_file()
+
+
+def test_final_quality_gates_are_wired_into_ci():
+    workflow = (ROOT / ".github/workflows/build-distributions.yml").read_text(encoding="utf-8")
+    for marker in [
+        "scripts/project_hygiene.py --project-root . --mode final",
+        "scripts/validate_workflow_parity.py",
+        "scripts/verify_reproducible_build.py",
+    ]:
+        assert marker in workflow
+
+
+def test_final_documentation_matches_runtime_state():
+    project = (ROOT / "PROJECT.md").read_text(encoding="utf-8")
+    plan = (ROOT / "docs/development-plan.md").read_text(encoding="utf-8")
+    for marker in [
+        "Claude Projects – ready, active",
+        "OpenCode – ready, active",
+        "Runtime parity: `runtime-parity.yaml`",
+    ]:
+        assert marker in project
+    assert "**Step 5 – Final regression, hygiene and release readiness.**" in plan
+    assert "**Step 1 – GPT Builder 1.5 project contracts" not in plan.split("## Current next step")[-1]
+
+
+def test_final_quality_gate_scripts_exist():
+    for rel in [
+        "scripts/project_hygiene.py",
+        "scripts/validate_workflow_parity.py",
+        "scripts/verify_reproducible_build.py",
+    ]:
+        assert (ROOT / rel).is_file()
