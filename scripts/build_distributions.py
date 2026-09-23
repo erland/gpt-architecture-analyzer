@@ -31,7 +31,7 @@ KNOWLEDGE = [
     "knowledge/repository-inspection-checklist.md",
     "knowledge/view-catalog.md",
 ]
-SEMVER = re.compile(r"^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$")
+SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 FIXED_TIME = (2020, 1, 1, 0, 0, 0)
 
 def parse_args():
