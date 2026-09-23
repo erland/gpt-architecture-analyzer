@@ -1,0 +1,16 @@
+schema_version: 1
+suites:
+  deterministic:
+    type: deterministic
+    blocking: true
+    path: tests/test_project.py
+  instruction_adherence:
+    type: behavioral
+    blocking: true
+    path: tests/model-robustness
+  legacy_distribution_regression:
+    type: deterministic
+    blocking: true
+    commands:
+      - python3 scripts/build_distributions.py
+      - python3 scripts/validate_distributions.py
