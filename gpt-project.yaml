@@ -196,3 +196,18 @@ migration:
 testing:
   manifest: tests/test-manifest.yaml
   eval_case_schema: schemas/eval-case.schema.json
+
+runtime_parity:
+  model: runtime-parity.yaml
+  registered_runtimes:
+    - chatgpt_chat
+    - chatgpt_custom
+    - claude_project
+    - opencode
+    - openai_plugin
+  compared_categories:
+    - behavior
+    - capability
+    - artifact
+    - workspace_state
+    - tool
