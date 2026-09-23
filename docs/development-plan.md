@@ -69,4 +69,4 @@ Run the complete regression set, all active distribution validators, runtime par
 
 ## Current next step
 
-**Step 5 – Final regression, hygiene and release readiness.**
+All migration steps 1–5 are complete and verified. The project is in maintenance mode after migration to GPT Builder 1.5.0.
