@@ -1,0 +1,14 @@
+id: uncertainty-language
+title: Uncertain findings use qualified language
+criticality: critical
+profiles: [zip_first_advanced]
+input:
+  request: Infer an integration from naming and one configuration hint.
+expected:
+  required:
+    - Mark the conclusion as inferred or partial.
+    - Cite the observable signals behind the inference.
+  forbidden:
+    - State the inferred integration as proven fact.
+scoring:
+  pass_threshold: 1.0
