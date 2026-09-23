@@ -98,3 +98,27 @@ def test_runtime_assessment_keeps_opencode_ready():
     assert candidates["opencode"]["activate_by_default"] is True
     assert candidates["openai_plugin"]["suitability"] == "reduced"
     assert candidates["openai_plugin"]["activate_by_default"] is False
+
+
+def test_claude_and_opencode_are_active_peer_runtimes():
+    cfg = yaml.safe_load((ROOT / "gpt-project.yaml").read_text(encoding="utf-8"))
+    assert cfg["runtime"]["claude"]["enabled"] is True
+    assert cfg["runtime"]["claude"]["mode"] == "claude_project"
+    assert cfg["runtime"]["opencode"]["enabled"] is True
+    assert cfg["runtime"]["opencode"]["mode"] == "opencode_workspace"
+    assert cfg["runtime"]["opencode"]["runtime_root"] == ".opencode/architecture-analyzer"
+
+
+def test_build_and_validation_cover_new_peer_distributions():
+    build = (ROOT / "scripts/build_distributions.py").read_text(encoding="utf-8")
+    validate = (ROOT / "scripts/validate_distributions.py").read_text(encoding="utf-8")
+    for marker in [
+        "def build_claude(",
+        "def build_opencode(",
+        "architecture-analyzer-claude-v",
+        "architecture-analyzer-opencode-v",
+        ".opencode/architecture-analyzer",
+    ]:
+        assert marker in build
+    for marker in ["claude_project", "opencode", "fyra distributioner"]:
+        assert marker in validate
