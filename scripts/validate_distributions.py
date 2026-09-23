@@ -16,7 +16,7 @@ def starters_text():
     for line in lines[i:]:
         if line.startswith("## "): break
         if line.startswith("- "): out.append(line[2:])
-    return "# Suggested conversation starters\\n\\n"+"\\n".join(f"- {x}" for x in out)+"\\n"
+    return "# Suggested conversation starters\n\n"+"\n".join(f"- {x}" for x in out)+"\n"
 def verify_manifest(z,runtime_id,version):
     m=json.loads(z.read("MANIFEST.json"))
     if m.get("runtime_id")!=runtime_id: raise SystemExit(f"Fel runtime_id i manifest: {runtime_id}")
