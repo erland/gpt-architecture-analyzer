@@ -51,7 +51,7 @@ def starters_text():
         if line.startswith("## "): break
         if line.startswith("- "): out.append(line[2:])
     if not out: raise SystemExit("Inga conversation starters hittades")
-    return "# Suggested conversation starters\\n\\n" + "\\n".join(f"- {x}" for x in out) + "\\n"
+    return "# Suggested conversation starters\n\n" + "\n".join(f"- {x}" for x in out) + "\n"
 
 def verify_sources():
     for p in [LEGACY_INSTRUCTIONS, CANONICAL_INSTRUCTIONS, CONFIG_MD, CONFIG_JSON, SETUP, START_HERE, PROJECT_CONFIG]:
@@ -80,7 +80,7 @@ def write_manifest(base, runtime_id, version, entrypoint):
     for p in sorted(x for x in base.rglob("*") if x.is_file() and x.name != "MANIFEST.json"):
         files[p.relative_to(base).as_posix()] = {"sha256": sha(p), "bytes": p.stat().st_size}
     payload = {"schema_version": 1, "runtime_id": runtime_id, "version": version, "entrypoint": entrypoint, "files": files}
-    (base / "MANIFEST.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    (base / "MANIFEST.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 def platform_contract(runtime_id, version, adapter):
     import yaml
@@ -90,34 +90,34 @@ def platform_contract(runtime_id, version, adapter):
 def build_custom(base, version):
     for rel in ["gpt-instructions.txt", "gpt-configuration.md", "gpt-config.json", "docs/setup-steps.md", *KNOWLEDGE]:
         dst = base / rel; dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(ROOT / rel, dst)
-    (base / "VERSION").write_text(version + "\\n", encoding="utf-8")
+    (base / "VERSION").write_text(version + "\n", encoding="utf-8")
 
 def build_portable(base, version):
     shutil.copy2(START_HERE, base / "START-HERE.md"); (base / "assistant").mkdir(parents=True, exist_ok=True)
     shutil.copy2(LEGACY_INSTRUCTIONS, base / "assistant" / "instructions.txt")
     (base / "assistant" / "conversation-starters.md").write_text(starters_text(), encoding="utf-8")
-    copy_knowledge(base / "knowledge"); (base / "VERSION").write_text(version + "\\n", encoding="utf-8")
+    copy_knowledge(base / "knowledge"); (base / "VERSION").write_text(version + "\n", encoding="utf-8")
     write_manifest(base, "chatgpt_chat", version, "START-HERE.md")
 
 def build_claude(base, version):
     project = base / "project"; project.mkdir(parents=True, exist_ok=True)
     shutil.copy2(CANONICAL_INSTRUCTIONS, project / "instructions.md"); copy_knowledge(project / "knowledge")
     contract = platform_contract("claude_project", version, {"mode": "claude_project", "project_instructions": True, "project_knowledge": True, "local_shell_available": False, "persistent_state_required": False})
-    (project / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    (project / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (base / "README.md").write_text("# Architecture Analyzer – Claude Projects\\n\\nUse project/instructions.md as Project Instructions and add all files under project/knowledge/ as Project Knowledge. Repository source to analyze must be supplied separately.\\n", encoding="utf-8")
-    (base / "VERSION").write_text(version + "\\n", encoding="utf-8"); write_manifest(base, "claude_project", version, "README.md")
+    (base / "VERSION").write_text(version + "\n", encoding="utf-8"); write_manifest(base, "claude_project", version, "README.md")
 
 def build_opencode(base, version):
     runtime_root = base / ".opencode" / "architecture-analyzer"; runtime_root.mkdir(parents=True, exist_ok=True)
     shutil.copy2(CANONICAL_INSTRUCTIONS, runtime_root / "instructions.md"); copy_knowledge(runtime_root / "knowledge")
     contract = platform_contract("opencode", version, {"mode": "opencode_workspace", "native_filesystem": True, "native_shell": True, "assistant_runtime_root": ".opencode/architecture-analyzer", "target_source_must_remain_outside_runtime_root": True, "persistent_state_required": False})
-    (runtime_root / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    (runtime_root / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     agents = "# Architecture Analyzer – OpenCode\\n\\nAnalyze the current source-code workspace using the canonical Architecture Analyzer contract. Assistant runtime/reference files are under .opencode/architecture-analyzer/ and must not be treated as target source evidence. Use native filesystem and shell read-only by default for inventory and evidence gathering. Do not modify target source unless the user explicitly asks for a separate implementation task.\\n\\n" + CANONICAL_INSTRUCTIONS.read_text(encoding="utf-8")
     (base / "AGENTS.md").write_text(agents, encoding="utf-8")
     cfg = {"$schema": "https://opencode.ai/config.json", "instructions": ["AGENTS.md"], "permission": {"edit": "ask", "bash": "ask"}}
-    (base / "opencode.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    (base / "opencode.json").write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (base / "README.md").write_text("# Architecture Analyzer – OpenCode\\n\\nExtract at the root of the repository/workspace to analyze. Runtime/reference files remain isolated under .opencode/architecture-analyzer/.\\n", encoding="utf-8")
-    (base / "VERSION").write_text(version + "\\n", encoding="utf-8"); write_manifest(base, "opencode", version, "AGENTS.md")
+    (base / "VERSION").write_text(version + "\n", encoding="utf-8"); write_manifest(base, "opencode", version, "AGENTS.md")
 
 def main():
     a = parse_args(); version = resolve_version(a.version); verify_sources(); out = Path(a.output_dir).resolve(); out.mkdir(parents=True, exist_ok=True)
