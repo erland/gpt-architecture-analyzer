@@ -7,19 +7,23 @@ plan:
   total_steps: 5
 progress:
   current_phase: migration
-  current_step: 1
-  last_completed_step: 0
-  completed_steps: []
+  current_step: 2
+  last_completed_step: 1
+  completed_steps:
+    - 1
   skipped_steps: []
   inserted_steps: []
 state:
-  overall: in_progress
+  overall: pass
   blocking_issues: []
   warnings: []
+validation:
+  last_result: pass
+  details: GPT project lint, existing distribution build and existing distribution validation passed on the migration branch.
 next_step:
-  recommended: 1
-  title: GPT Builder 1.5 project contracts and guided model robustness
-  reason: The repository still uses a legacy GPT project layout and needs a canonical/project-contract layer before runtime expansion.
+  recommended: 2
+  title: Deterministic tests and instruction-adherence evals
+  reason: The GPT Builder 1.5 project model is in place and legacy Chat/Custom distributions remain valid.
 resume:
   supported: true
   required_files:
@@ -28,4 +32,4 @@ resume:
     - docs/development-plan.md
     - STATUS.md
     - PROJECT.md
-  human_readable_status: Migration to GPT Builder 1.5.0 has started. Step 1 is awaiting CI verification.
+  human_readable_status: Step 1 is complete and CI-verified. Continue with step 2.
