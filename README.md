@@ -1,6 +1,6 @@
 # Architecture Analyzer
 
-Repository för Custom GPT:n **Architecture Analyzer** samt en portabel ChatGPT-distribution byggd från samma instruktioner och Knowledge-filer.
+Repository för **Architecture Analyzer** med jämbördiga distributioner för ChatGPT Chat, Custom GPT, Claude Projects och OpenCode, byggda från samma canonical instruktion och Knowledge-lager.
 
 ## Aktuell Custom GPT-konfiguration
 
@@ -23,8 +23,13 @@ Det skapar:
 
 ```text
 dist/
-  architecture-analyzer-custom-gpt-vX.Y.Z.zip
+  architecture-analyzer-project-vX.Y.Z.zip
   architecture-analyzer-chat-vX.Y.Z.zip
+  architecture-analyzer-custom-gpt-vX.Y.Z.zip
+  architecture-analyzer-claude-vX.Y.Z.zip
+  architecture-analyzer-opencode-vX.Y.Z.zip
+  SHA256SUMS.txt
+  DELIVERY-MANIFEST.json
 ```
 
 Vanliga byggen använder versionen i `VERSION`.
@@ -49,8 +54,18 @@ v1.1.0
 En release `v1.1.0` bygger och bifogar automatiskt:
 
 ```text
-architecture-analyzer-custom-gpt-v1.1.0.zip
+architecture-analyzer-project-v1.1.0.zip
 architecture-analyzer-chat-v1.1.0.zip
+architecture-analyzer-custom-gpt-v1.1.0.zip
+architecture-analyzer-claude-v1.1.0.zip
+architecture-analyzer-opencode-v1.1.0.zip
+SHA256SUMS.txt
+DELIVERY-MANIFEST.json
 ```
 
 Taggversionen skrivs även in i `VERSION` inne i respektive distributionspaket och i portable-paketets `MANIFEST.json`.
+
+
+## Validering
+
+CI verifierar projektlint, regressionstester, instruction-adherence, samtliga distributioner, runtime parity, release readiness, project hygiene, workflow parity och reproducerbar leverans.

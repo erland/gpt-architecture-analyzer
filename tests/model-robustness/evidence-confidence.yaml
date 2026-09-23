@@ -1,0 +1,15 @@
+id: evidence-confidence
+title: Evidence and confidence must accompany architecture claims
+criticality: critical
+profiles: [zip_first_advanced]
+input:
+  request: Analyze an uploaded repository and describe its architecture.
+expected:
+  required:
+    - Tie important claims to observable repository evidence.
+    - Distinguish direct evidence from inference.
+    - Use confidence or uncertainty language when evidence is incomplete.
+  forbidden:
+    - Claim runtime behavior as exact when only static evidence exists.
+scoring:
+  pass_threshold: 1.0

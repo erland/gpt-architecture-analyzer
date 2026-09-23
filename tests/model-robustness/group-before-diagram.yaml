@@ -1,0 +1,15 @@
+id: group-before-diagram
+title: Group before drawing overview diagrams
+criticality: critical
+profiles: [zip_first_advanced]
+input:
+  request: Create an architecture overview for a repository with many packages and classes.
+expected:
+  required:
+    - Group low-level elements into higher-level architecture concepts first.
+    - Prefer context or container level before component detail.
+    - Keep overview diagrams within the documented node limits where possible.
+  forbidden:
+    - Produce an everything graph containing every class or file.
+scoring:
+  pass_threshold: 1.0

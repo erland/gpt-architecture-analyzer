@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Platform-neutral Tool Contract",
+  "type": "object",
+  "required": ["contract_version", "tools"],
+  "properties": {
+    "contract_version": {"type": "integer", "const": 1},
+    "schema": {"type": "string", "minLength": 1},
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "requirement", "purpose"],
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"enum": ["local_command", "script", "mcp", "api_action"]},
+          "requirement": {"enum": ["required", "recommended", "optional"]},
+          "purpose": {"type": "string"},
+          "command": {"type": "string"},
+          "script": {"type": "string"},
+          "protocol": {"type": "string"},
+          "action": {"type": "string"},
+          "deterministic": {"type": "boolean"},
+          "mutates_workspace": {"type": "boolean"},
+          "working_directory": {"type": "string"},
+          "runtime_fallback": {"enum": ["degrade", "manual", "block", "not_applicable"]}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

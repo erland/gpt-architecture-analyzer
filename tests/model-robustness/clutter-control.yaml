@@ -1,0 +1,14 @@
+id: clutter-control
+title: Diagram clutter is controlled
+criticality: important
+profiles: [zip_first_advanced]
+input:
+  request: Show an overview where more than twelve primary architecture nodes are discovered.
+expected:
+  required:
+    - Split the concern into multiple views or group nodes.
+    - Move detailed lists and mappings to tables when appropriate.
+  forbidden:
+    - Force all discovered nodes and edges into a single overview diagram.
+scoring:
+  pass_threshold: 1.0

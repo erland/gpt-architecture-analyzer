@@ -1,0 +1,35 @@
+schema_version: 1
+reference: canonical_contract
+registered_runtimes:
+  - chatgpt_chat
+  - chatgpt_custom
+  - claude_project
+  - opencode
+  - openai_plugin
+compared_categories:
+  - behavior
+  - capability
+  - artifact
+  - workspace_state
+  - tool
+runtimes:
+  chatgpt_chat:
+    suitability: ready
+    active: true
+  chatgpt_custom:
+    suitability: ready
+    active: true
+  claude_project:
+    suitability: ready
+    active: true
+  opencode:
+    suitability: ready
+    active: true
+  openai_plugin:
+    suitability: reduced
+    active: false
+notes:
+  - Chat, Custom GPT, Claude Projects and OpenCode preserve the same evidence-based analysis contract.
+  - OpenCode adds native workspace and shell access but must keep runtime/reference files separate from target-source evidence.
+  - Claude Projects has reduced local execution capability but remains behaviorally ready for supplied project files.
+  - OpenAI Plugin remains inactive because skills alone do not provide the repository workspace/tool access required for full parity.

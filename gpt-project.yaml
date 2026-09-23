@@ -1,0 +1,213 @@
+schema_version: 1
+project:
+  id: architecture-analyzer
+  name: Architecture Analyzer
+  description: Evidence-based source-code architecture analysis with grouped views, diagrams, risks and recommendations.
+  profile: zip_first_advanced
+
+analysis:
+  source: existing-project-migration
+  runtime:
+    strategy: peer_candidates
+    candidates:
+      - runtime_id: chatgpt_chat
+        suitability: ready
+        activate_by_default: true
+        reason: Uploaded repository ZIPs and file analysis support the established workflow.
+      - runtime_id: chatgpt_custom
+        suitability: ready
+        activate_by_default: true
+        reason: Existing instructions and ten Knowledge files already fit this runtime.
+      - runtime_id: claude_project
+        suitability: ready
+        activate_by_default: true
+        reason: Project Instructions and Project Knowledge can carry the same analysis contract.
+      - runtime_id: opencode
+        suitability: ready
+        activate_by_default: true
+        reason: Local workspace and repository inspection are directly useful for source-code architecture analysis.
+      - runtime_id: openai_plugin
+        suitability: reduced
+        activate_by_default: false
+        reason: Skills can package analysis guidance, but the runtime does not itself provide the repository workspace/tooling needed for full parity.
+
+model_robustness:
+  level: guided
+  rationale: Architecture analysis follows a multi-step evidence-driven workflow but does not require persistent cross-session state.
+  operational_core: true
+  explicit_workflow: true
+  deterministic_gates: true
+  instruction_adherence_evals: true
+
+instructions:
+  canonical: canonical/instructions.md
+  legacy_source: gpt-instructions.txt
+  core_contract:
+    enabled: true
+    required_markers:
+      - "Primary mission:"
+      - "Default workflow when repositories are uploaded:"
+      - "Diagram rules:"
+      - "Output style:"
+      - "Never claim exact behavior unless supported by source evidence."
+    required_runtime_dependencies:
+      - knowledge/architecture-analysis-method.md
+      - knowledge/evidence-and-confidence-rules.md
+    max_required_file_hops: 2
+    knowledge_may_not_be_required_for_core_behavior: false
+
+knowledge_architecture:
+  canonical_root: knowledge
+  files: 10
+  role: reference_and_method
+  custom_gpt:
+    priority:
+      - knowledge/architecture-analysis-method.md
+      - knowledge/evidence-and-confidence-rules.md
+      - knowledge/repository-inspection-checklist.md
+      - knowledge/clutter-control-and-grouping-rules.md
+
+capabilities:
+  contract_version: 1
+  schema: schemas/capability-contract.schema.json
+  recommendation_mode: inferred_from_use_case
+  ask_user_only_when_business_choice_is_ambiguous: true
+  requirements:
+    web:
+      level: optional
+      reason: Useful for current framework documentation but not required for core repository analysis.
+    filesystem:
+      read: required
+      write: optional
+    shell:
+      level: recommended
+      reason: Useful in local-agent runtimes for repository inventory and deterministic inspection.
+    code_execution:
+      level: recommended
+      reason: Useful for unpacking, searching and summarizing uploaded repositories.
+    structured_data:
+      level: recommended
+      reason: Architecture model and evidence can be represented structurally.
+    persistent_state:
+      level: not_required
+    external_tools:
+      level: not_required
+    image_generation:
+      level: not_required
+
+artifacts:
+  contract_version: 1
+  schema: schemas/artifact-contract.schema.json
+  outputs:
+    architecture_report:
+      kind: report
+      format: markdown
+      requirement: required
+      persistence: ephemeral
+      multiplicity: one
+      description: Evidence-based architecture analysis with grouped views, diagrams, risks and recommendations.
+    architecture_model:
+      kind: data
+      format: yaml
+      requirement: conditional
+      condition: When a structured model helps the requested analysis or follow-up work.
+      persistence: ephemeral
+      multiplicity: one
+    runtime_package:
+      kind: distribution
+      format: zip
+      requirement: required
+      persistence: persistent
+      multiplicity: many
+    project_package:
+      kind: package
+      format: zip
+      requirement: required
+      persistence: persistent
+      multiplicity: one
+
+workspace_state:
+  contract_version: 1
+  schema: schemas/workspace-state-contract.schema.json
+  workspace:
+    requirement: required
+    persistence: ephemeral
+    portable: true
+    separate_from_assistant: true
+    description: Repository content being analyzed is the working dataset and must remain distinct from assistant/runtime files.
+  state:
+    requirement: optional
+    persistence: ephemeral
+    authority: conversation
+    description: Analysis progress can remain in the current conversation; no persistent state machine is required.
+  runtime_preferences:
+    chat: conversation_or_file
+    agent: workspace_file
+
+tools:
+  contract_version: 1
+  schema: schemas/tool-contract.schema.json
+  tools: []
+
+runtime:
+  primary: none
+  chat_zip:
+    enabled: true
+    legacy_builder: scripts/build_distributions.py
+  custom_gpt:
+    enabled: true
+    legacy_builder: scripts/build_distributions.py
+    knowledge:
+      max_files: 20
+      strategy: identical
+  claude:
+    enabled: true
+    role: peer_distribution
+    mode: claude_project
+    project:
+      instructions: project/instructions.md
+      knowledge: project/knowledge
+      runtime_contract: project/runtime-contract.json
+  opencode:
+    enabled: true
+    role: peer_distribution
+    mode: opencode_workspace
+    instructions: AGENTS.md
+    runtime_root: .opencode/architecture-analyzer
+    runtime_contract: .opencode/architecture-analyzer/runtime-contract.json
+  openai_plugin:
+    enabled: false
+    role: assessed_reduced
+
+ci:
+  enabled: true
+  workflow: .github/workflows/build-distributions.yml
+
+release:
+  github:
+    enabled: true
+    workflow: .github/workflows/build-distributions.yml
+    version_source: release_tag
+
+migration:
+  target: gpt-builder-1.5.0
+  preserve_legacy_distribution_sources_until_replaced: true
+
+testing:
+  manifest: tests/test-manifest.yaml
+  eval_case_schema: schemas/eval-case.schema.json
+
+runtime_parity:
+  model: runtime-parity.yaml
+  registered_runtimes:
+    - chatgpt_chat
+    - chatgpt_custom
+    - claude_project
+    - opencode
+    - openai_plugin
+  compared_categories:
+    - behavior
+    - capability
+    - artifact
+    - workspace_state
+    - tool

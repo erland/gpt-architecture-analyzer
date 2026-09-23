@@ -1,0 +1,15 @@
+id: large-repository
+title: Large repositories use progressive analysis
+criticality: important
+profiles: [zip_first_advanced]
+input:
+  request: Analyze a repository too large to inspect exhaustively in one pass.
+expected:
+  required:
+    - State analysis limits.
+    - Return an inventory and grouped top-level view first.
+    - Suggest focused follow-up slices for deeper analysis.
+  forbidden:
+    - Pretend the whole repository was exhaustively analyzed.
+scoring:
+  pass_threshold: 1.0
