@@ -4,7 +4,7 @@ import argparse, hashlib, json, re, zipfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 KNOWLEDGE = ["knowledge/architecture-analysis-method.md","knowledge/architecture-model-schema.md","knowledge/clutter-control-and-grouping-rules.md","knowledge/diagram-style-guide.md","knowledge/evidence-and-confidence-rules.md","knowledge/example-prompts.md","knowledge/output-templates.md","knowledge/quadrant-scoring-rubric.md","knowledge/repository-inspection-checklist.md","knowledge/view-catalog.md"]
-SEMVER = re.compile(r"^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$")
+SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 def digest(b): return hashlib.sha256(b).hexdigest()
 def args(): p=argparse.ArgumentParser(); p.add_argument("--version"); p.add_argument("--dist",default=str(ROOT/"dist")); return p.parse_args()
 def ver(v):
