@@ -11,15 +11,15 @@ The existing Architecture Analyzer behavior and both current distributions are b
 - [x] Step 1 – GPT Builder 1.5 project contracts and guided model robustness
 - [x] Step 2 – Deterministic tests and instruction-adherence evals
 - [x] Step 3 – Claude Projects and OpenCode peer distributions
-- [ ] Step 4 – Generalized runtime parity and release pipeline
+- [x] Step 4 – Generalized runtime parity and release pipeline
 - [ ] Step 5 – Final regression, hygiene and release readiness
 
 ## Current runtime state
 
 - ChatGPT Chat: ready / active
 - ChatGPT Custom: ready / active
-- Claude Projects: ready / planned
-- OpenCode: ready / planned
+- Claude Projects: ready / active
+- OpenCode: ready / active
 - OpenAI Plugin: reduced / inactive
 
 ## Verification of step 1
@@ -34,9 +34,13 @@ CI passed deterministic regression tests and the blocking instruction-adherence 
 
 CI passed the four-runtime build and validation. Claude Projects uses the canonical instruction and all ten Knowledge files. OpenCode uses the same canonical contract, keeps Architecture Analyzer runtime/reference files under `.opencode/architecture-analyzer/`, and explicitly excludes that runtime root from target-source evidence.
 
+## Verification of step 4
+
+CI passed generalized runtime parity across all five registered runtimes. The active release set now contains a project ZIP plus Chat, Custom GPT, Claude Projects and OpenCode ZIPs, together with `SHA256SUMS.txt` and `DELIVERY-MANIFEST.json`. GitHub Release uploads the complete set explicitly and uses the release tag as the authoritative version source.
+
 ## Current step
 
-**Step 4 – Generalized runtime parity and release pipeline.**
+**Step 5 – Final regression, hygiene and release readiness.**
 
 ## Blockers
 
