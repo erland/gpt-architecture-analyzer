@@ -55,15 +55,36 @@ jobs:
       - name: Validate distributions
         run: python3 scripts/validate_distributions.py --version "${{ steps.version.outputs.version }}"
 
+      - name: Validate runtime parity
+        run: python3 scripts/validate_runtime_parity.py --version "${{ steps.version.outputs.version }}"
+
+      - name: Validate release readiness
+        run: python3 scripts/validate_release_readiness.py --version "${{ steps.version.outputs.version }}"
+
       - name: Upload Actions artifacts
         uses: actions/upload-artifact@v4
         with:
           name: architecture-analyzer-v${{ steps.version.outputs.version }}
-          path: dist/*.zip
+          path: |
+            dist/*.zip
+            dist/SHA256SUMS.txt
+            dist/DELIVERY-MANIFEST.json
           retention-days: 14
 
       - name: Attach ZIP files to GitHub Release
         if: github.event_name == 'release'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" dist/*.zip --clobber
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "dist/architecture-analyzer-project-v${VERSION}.zip" \
+            "dist/architecture-analyzer-chat-v${VERSION}.zip" \
+            "dist/architecture-analyzer-custom-gpt-v${VERSION}.zip" \
+            "dist/architecture-analyzer-claude-v${VERSION}.zip" \
+            "dist/architecture-analyzer-opencode-v${VERSION}.zip" \
+            dist/SHA256SUMS.txt \
+            dist/DELIVERY-MANIFEST.json \
+            --clobber
