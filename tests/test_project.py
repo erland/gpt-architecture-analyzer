@@ -121,7 +121,7 @@ def test_build_and_validation_cover_new_peer_distributions():
         ".opencode/architecture-analyzer",
     ]:
         assert marker in build
-    for marker in ["claude_project", "opencode", "fyra distributioner"]:
+    for marker in ["claude_project", "opencode", "projektpaket och fyra runtime-distributioner"]:
         assert marker in validate
 
 
