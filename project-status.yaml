@@ -7,12 +7,13 @@ plan:
   total_steps: 5
 progress:
   current_phase: migration
-  current_step: 4
-  last_completed_step: 3
+  current_step: 5
+  last_completed_step: 4
   completed_steps:
     - 1
     - 2
     - 3
+    - 4
   skipped_steps: []
   inserted_steps: []
 state:
@@ -21,11 +22,11 @@ state:
   warnings: []
 validation:
   last_result: pass
-  details: GPT project lint, deterministic regression tests, instruction-adherence validation, four-runtime build and four-runtime distribution validation passed on the migration branch.
+  details: GPT project lint, regression tests, instruction-adherence validation, project-plus-four-runtime build, distribution validation, runtime parity and release readiness passed on the migration branch.
 next_step:
-  recommended: 4
-  title: Generalized runtime parity and release pipeline
-  reason: Claude Projects and OpenCode are built and CI-validated from the same canonical instruction and Knowledge layer; next generalize parity and release.
+  recommended: 5
+  title: Final regression, hygiene and release readiness
+  reason: Runtime parity and the complete project-plus-four-runtime release pipeline are CI-verified; only final hygiene, workflow parity and reproducibility remain.
 resume:
   supported: true
   required_files:
@@ -34,4 +35,4 @@ resume:
     - docs/development-plan.md
     - STATUS.md
     - PROJECT.md
-  human_readable_status: Step 3 is complete and CI-verified. Continue with step 4.
+  human_readable_status: Step 4 is complete and CI-verified. Continue with step 5.
