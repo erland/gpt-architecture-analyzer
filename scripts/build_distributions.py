@@ -90,13 +90,18 @@ def platform_contract(runtime_id, version, adapter):
 def build_custom(base, version):
     for rel in ["gpt-instructions.txt", "gpt-configuration.md", "gpt-config.json", "docs/setup-steps.md", *KNOWLEDGE]:
         dst = base / rel; dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(ROOT / rel, dst)
+    contract = platform_contract("chatgpt_custom", version, {"mode": "custom_gpt", "project_knowledge": True, "persistent_state_required": False})
+    (base / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (base / "VERSION").write_text(version + "\n", encoding="utf-8")
 
 def build_portable(base, version):
     shutil.copy2(START_HERE, base / "START-HERE.md"); (base / "assistant").mkdir(parents=True, exist_ok=True)
     shutil.copy2(LEGACY_INSTRUCTIONS, base / "assistant" / "instructions.txt")
     (base / "assistant" / "conversation-starters.md").write_text(starters_text(), encoding="utf-8")
-    copy_knowledge(base / "knowledge"); (base / "VERSION").write_text(version + "\n", encoding="utf-8")
+    copy_knowledge(base / "knowledge")
+    contract = platform_contract("chatgpt_chat", version, {"mode": "chat_zip", "uploaded_repository_files": True, "persistent_state_required": False})
+    (base / "assistant" / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (base / "VERSION").write_text(version + "\n", encoding="utf-8")
     write_manifest(base, "chatgpt_chat", version, "START-HERE.md")
 
 def build_claude(base, version):
@@ -119,13 +124,59 @@ def build_opencode(base, version):
     (base / "README.md").write_text("# Architecture Analyzer – OpenCode\\n\\nExtract at the root of the repository/workspace to analyze. Runtime/reference files remain isolated under .opencode/architecture-analyzer/.\\n", encoding="utf-8")
     (base / "VERSION").write_text(version + "\n", encoding="utf-8"); write_manifest(base, "opencode", version, "AGENTS.md")
 
+def build_project_package(base, version):
+    include = [
+        "canonical", "knowledge", "portable", "docs", "schemas", "tests", "scripts",
+        "gpt-project.yaml", "project-status.yaml", "PROJECT.md", "STATUS.md",
+        "README.md", "gpt-instructions.txt", "gpt-configuration.md", "gpt-config.json", "VERSION",
+        "runtime-parity.yaml",
+    ]
+    for rel in include:
+        src = ROOT / rel
+        if not src.exists():
+            continue
+        dst = base / rel
+        if src.is_dir():
+            shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache"))
+        else:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+    (base / "VERSION").write_text(version + "\n", encoding="utf-8")
+    write_manifest(base, "project", version, "gpt-project.yaml")
+
+def write_delivery_metadata(out, version, artifacts):
+    rows = []
+    for path, artifact_type in artifacts:
+        rows.append({"file": path.name, "type": artifact_type, "sha256": sha(path), "bytes": path.stat().st_size})
+    (out / "DELIVERY-MANIFEST.json").write_text(
+        json.dumps({"schema_version": 1, "version": version, "artifacts": rows}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (out / "SHA256SUMS.txt").write_text(
+        "".join(f"{row['sha256']}  {row['file']}\n" for row in rows),
+        encoding="utf-8",
+    )
+
 def main():
     a = parse_args(); version = resolve_version(a.version); verify_sources(); out = Path(a.output_dir).resolve(); out.mkdir(parents=True, exist_ok=True)
     for p in out.glob("architecture-analyzer-*-v*.zip"): p.unlink()
+    for p in (out / "DELIVERY-MANIFEST.json", out / "SHA256SUMS.txt"):
+        if p.exists(): p.unlink()
     with tempfile.TemporaryDirectory() as td:
-        t = Path(td); outputs = []
-        for name, fn in {"custom-gpt": build_custom, "chat": build_portable, "claude": build_claude, "opencode": build_opencode}.items():
-            root = t / name; root.mkdir(); fn(root, version); target = out / f"architecture-analyzer-{name}-v{version}.zip"; zipdir(root, target); outputs.append(target)
-    for path in outputs: print(path)
+        t = Path(td); artifacts = []
+        for name, fn, artifact_type in [
+            ("project", build_project_package, "project_zip"),
+            ("custom-gpt", build_custom, "custom_gpt_zip"),
+            ("chat", build_portable, "chat_zip"),
+            ("claude", build_claude, "claude_zip"),
+            ("opencode", build_opencode, "opencode_zip"),
+        ]:
+            root = t / name; root.mkdir(); fn(root, version)
+            target = out / f"architecture-analyzer-{name}-v{version}.zip"
+            zipdir(root, target); artifacts.append((target, artifact_type))
+    write_delivery_metadata(out, version, artifacts)
+    for path, _ in artifacts: print(path)
+    print(out / "SHA256SUMS.txt")
+    print(out / "DELIVERY-MANIFEST.json")
 
 if __name__ == "__main__": main()
