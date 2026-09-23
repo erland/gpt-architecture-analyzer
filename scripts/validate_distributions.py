@@ -24,19 +24,33 @@ def verify_manifest(z,runtime_id,version):
     for rel,meta in m.get("files",{}).items():
         if digest(z.read(rel))!=meta.get("sha256"): raise SystemExit(f"Fel hash i manifest {runtime_id}: {rel}")
 def validate(v,dist):
-    paths={"custom":dist/f"architecture-analyzer-custom-gpt-v{v}.zip","chat":dist/f"architecture-analyzer-chat-v{v}.zip","claude":dist/f"architecture-analyzer-claude-v{v}.zip","opencode":dist/f"architecture-analyzer-opencode-v{v}.zip"}
+    paths={
+        "project":dist/f"architecture-analyzer-project-v{v}.zip",
+        "custom":dist/f"architecture-analyzer-custom-gpt-v{v}.zip",
+        "chat":dist/f"architecture-analyzer-chat-v{v}.zip",
+        "claude":dist/f"architecture-analyzer-claude-v{v}.zip",
+        "opencode":dist/f"architecture-analyzer-opencode-v{v}.zip",
+    }
     for p in paths.values():
         if not p.is_file(): raise SystemExit(f"Saknar {p}")
         with zipfile.ZipFile(p) as z:
             if z.testzip() is not None: raise SystemExit(f"Korrupt ZIP: {p}")
+    with zipfile.ZipFile(paths["project"]) as z:
+        required={"gpt-project.yaml","project-status.yaml","PROJECT.md","STATUS.md","README.md","runtime-parity.yaml","MANIFEST.json","VERSION"}
+        if not required.issubset(set(z.namelist())): raise SystemExit("Project ZIP saknar obligatoriska filer")
+        verify_manifest(z,"project",v)
     with zipfile.ZipFile(paths["custom"]) as z:
-        exp={"gpt-instructions.txt","gpt-configuration.md","gpt-config.json","docs/setup-steps.md","VERSION",*KNOWLEDGE}
-        if set(z.namelist())!=exp: raise SystemExit("Custom GPT-innehåll avviker")
+        exp={"gpt-instructions.txt","gpt-configuration.md","gpt-config.json","docs/setup-steps.md","runtime-contract.json","VERSION",*KNOWLEDGE}
+        if set(z.namelist())!=exp: raise SystemExit(f"Custom GPT-innehåll avviker: {sorted(set(z.namelist())^exp)}")
+        contract=json.loads(z.read("runtime-contract.json"))
+        if contract.get("runtime_id")!="chatgpt_custom": raise SystemExit("Custom GPT runtime_id fel")
     with zipfile.ZipFile(paths["chat"]) as z:
-        k={f"knowledge/{Path(x).name}" for x in KNOWLEDGE}; exp={"START-HERE.md","VERSION","MANIFEST.json","assistant/instructions.txt","assistant/conversation-starters.md",*k}
+        k={f"knowledge/{Path(x).name}" for x in KNOWLEDGE}; exp={"START-HERE.md","VERSION","MANIFEST.json","assistant/instructions.txt","assistant/conversation-starters.md","assistant/runtime-contract.json",*k}
         if set(z.namelist())!=exp: raise SystemExit("Portable-innehåll avviker")
         if z.read("assistant/instructions.txt")!=(ROOT/"canonical/instructions.md").read_bytes(): raise SystemExit("Portable instruktion avviker från canonical")
         if z.read("assistant/conversation-starters.md").decode()!=starters_text(): raise SystemExit("Portable starters avviker")
+        contract=json.loads(z.read("assistant/runtime-contract.json"))
+        if contract.get("runtime_id")!="chatgpt_chat": raise SystemExit("Chat runtime_id fel")
         verify_manifest(z,"chatgpt_chat",v)
     with zipfile.ZipFile(paths["claude"]) as z:
         k={f"project/knowledge/{Path(x).name}" for x in KNOWLEDGE}; req={"README.md","VERSION","MANIFEST.json","project/instructions.md","project/runtime-contract.json",*k}
@@ -58,6 +72,17 @@ def validate(v,dist):
         if a.get("native_filesystem") is not True or a.get("native_shell") is not True: raise SystemExit("OpenCode native capability declaration fel")
         if a.get("target_source_must_remain_outside_runtime_root") is not True: raise SystemExit("OpenCode workspace separation saknas")
         verify_manifest(z,"opencode",v)
-    print(f"OK: fyra distributioner validerade för {v}")
+    delivery=dist/"DELIVERY-MANIFEST.json"; sums=dist/"SHA256SUMS.txt"
+    if not delivery.is_file() or not sums.is_file(): raise SystemExit("Saknar delivery manifest eller checksummor")
+    dm=json.loads(delivery.read_text(encoding="utf-8"))
+    types={x.get("type") for x in dm.get("artifacts",[])}
+    required_types={"project_zip","custom_gpt_zip","chat_zip","claude_zip","opencode_zip"}
+    if types!=required_types: raise SystemExit(f"Delivery artifact types avviker: {sorted(types)}")
+    expected_sums={}
+    for line in sums.read_text(encoding="utf-8").splitlines():
+        h,name=line.split(None,1); expected_sums[name.strip()]=h
+    for p in paths.values():
+        if expected_sums.get(p.name)!=digest(p.read_bytes()): raise SystemExit(f"Checksum avviker: {p.name}")
+    print(f"OK: projektpaket och fyra runtime-distributioner validerade för {v}")
 def main(): a=args(); validate(ver(a.version),Path(a.dist).resolve())
 if __name__=="__main__": main()
