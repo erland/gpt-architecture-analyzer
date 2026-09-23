@@ -61,6 +61,15 @@ jobs:
       - name: Validate release readiness
         run: python3 scripts/validate_release_readiness.py --version "${{ steps.version.outputs.version }}"
 
+      - name: Final project hygiene
+        run: python3 scripts/project_hygiene.py --project-root . --mode final
+
+      - name: Validate workflow parity
+        run: python3 scripts/validate_workflow_parity.py
+
+      - name: Verify reproducible delivery
+        run: python3 scripts/verify_reproducible_build.py --version "${{ steps.version.outputs.version }}"
+
       - name: Upload Actions artifacts
         uses: actions/upload-artifact@v4
         with:
