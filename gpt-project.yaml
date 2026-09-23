@@ -185,3 +185,7 @@ release:
 migration:
   target: gpt-builder-1.5.0
   preserve_legacy_distribution_sources_until_replaced: true
+
+testing:
+  manifest: tests/test-manifest.yaml
+  eval_case_schema: schemas/eval-case.schema.json
