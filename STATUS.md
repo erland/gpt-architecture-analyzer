@@ -10,7 +10,7 @@ The existing Architecture Analyzer behavior and both current distributions are b
 
 - [x] Step 1 – GPT Builder 1.5 project contracts and guided model robustness
 - [x] Step 2 – Deterministic tests and instruction-adherence evals
-- [ ] Step 3 – Claude Projects and OpenCode peer distributions
+- [x] Step 3 – Claude Projects and OpenCode peer distributions
 - [ ] Step 4 – Generalized runtime parity and release pipeline
 - [ ] Step 5 – Final regression, hygiene and release readiness
 
@@ -30,9 +30,13 @@ CI passed the new GPT project lint, the existing distribution build and the exis
 
 CI passed deterministic regression tests and the blocking instruction-adherence suite for evidence/confidence, grouping before diagramming, large-repository handling, uncertainty language and clutter control. Existing Chat and Custom GPT distribution build/validation still pass.
 
+## Verification of step 3
+
+CI passed the four-runtime build and validation. Claude Projects uses the canonical instruction and all ten Knowledge files. OpenCode uses the same canonical contract, keeps Architecture Analyzer runtime/reference files under `.opencode/architecture-analyzer/`, and explicitly excludes that runtime root from target-source evidence.
+
 ## Current step
 
-**Step 3 – Claude Projects and OpenCode peer distributions.**
+**Step 4 – Generalized runtime parity and release pipeline.**
 
 ## Blockers
 
