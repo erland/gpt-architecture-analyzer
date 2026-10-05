@@ -69,3 +69,8 @@ Taggversionen skrivs även in i `VERSION` inne i respektive distributionspaket o
 ## Validering
 
 CI verifierar projektlint, regressionstester, instruction-adherence, samtliga distributioner, runtime parity, release readiness, project hygiene, workflow parity och reproducerbar leverans.
+
+
+## OpenAI Plugin
+
+The project also builds an OpenAI Plugin peer distribution. It is skills-first and carries the canonical analysis contract plus Knowledge references. Repository/file access is a required host-runtime dependency for source-code analysis. The plugin contains no runtime scripts and generates no MCP wrapper.
