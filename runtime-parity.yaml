@@ -26,10 +26,11 @@ runtimes:
     suitability: ready
     active: true
   openai_plugin:
-    suitability: reduced
-    active: false
+    suitability: ready
+    active: true
+    compatibility: ready_runtime_dependent
 notes:
   - Chat, Custom GPT, Claude Projects and OpenCode preserve the same evidence-based analysis contract.
   - OpenCode adds native workspace and shell access but must keep runtime/reference files separate from target-source evidence.
   - Claude Projects has reduced local execution capability but remains behaviorally ready for supplied project files.
-  - OpenAI Plugin remains inactive because skills alone do not provide the repository workspace/tool access required for full parity.
+  - OpenAI Plugin is active as a skills-first peer runtime with required host repository/file access. Without that capability repository analysis must block rather than simulate evidence.
