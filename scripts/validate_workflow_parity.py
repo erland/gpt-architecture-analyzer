@@ -26,6 +26,7 @@ for artifact in (
     "architecture-analyzer-custom-gpt-v${VERSION}.zip",
     "architecture-analyzer-claude-v${VERSION}.zip",
     "architecture-analyzer-opencode-v${VERSION}.zip",
+    "architecture-analyzer-plugin-v${VERSION}.zip",
     "SHA256SUMS.txt",
     "DELIVERY-MANIFEST.json",
 ):
