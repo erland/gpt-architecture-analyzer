@@ -30,6 +30,7 @@ def validate(v,dist):
         "chat":dist/f"architecture-analyzer-chat-v{v}.zip",
         "claude":dist/f"architecture-analyzer-claude-v{v}.zip",
         "opencode":dist/f"architecture-analyzer-opencode-v{v}.zip",
+        "plugin":dist/f"architecture-analyzer-plugin-v{v}.zip",
     }
     for p in paths.values():
         if not p.is_file(): raise SystemExit(f"Saknar {p}")
@@ -60,6 +61,21 @@ def validate(v,dist):
         if c.get("runtime_id")!="claude_project": raise SystemExit("Claude runtime_id fel")
         if c.get("adapter",{}).get("local_shell_available") is not False: raise SystemExit("Claude shell declaration fel")
         verify_manifest(z,"claude_project",v)
+    with zipfile.ZipFile(paths["plugin"]) as z:
+        k={f"skills/architecture-analyzer/references/{Path(x).name}" for x in KNOWLEDGE}
+        req={"plugin.json","runtime-contract.json","README.md","VERSION","MANIFEST.json","skills/architecture-analyzer/SKILL.md",*k}
+        if set(z.namelist())!=req: raise SystemExit(f"Plugin-innehåll avviker: {sorted(set(z.namelist())^req)}")
+        skill=z.read("skills/architecture-analyzer/SKILL.md").decode()
+        for marker in ("Repository or uploaded source files must be actually accessible","block the repository-analysis task","must never be treated as target-source evidence","generates no MCP wrapper"):
+            if marker not in skill: raise SystemExit(f"Plugin SKILL saknar {marker}")
+        if (ROOT/"canonical/instructions.md").read_text(encoding="utf-8").strip() not in skill: raise SystemExit("Plugin SKILL saknar canonical beteende")
+        contract=json.loads(z.read("runtime-contract.json")); a=contract.get("adapter",{})
+        if contract.get("runtime_id")!="openai_plugin": raise SystemExit("Plugin runtime_id fel")
+        if a.get("mode")!="skills_first" or a.get("compatibility")!="ready_runtime_dependent": raise SystemExit("Plugin adapter fel")
+        if a.get("repository_file_access")!="required_host_runtime": raise SystemExit("Plugin repository gate saknas")
+        if a.get("target_source_must_remain_separate_from_plugin_resources") is not True: raise SystemExit("Plugin evidence separation saknas")
+        if a.get("mcp_generated") is not False or a.get("script_resources")!=[]: raise SystemExit("Plugin får inte paketera MCP/scripts")
+        verify_manifest(z,"openai_plugin",v)
     with zipfile.ZipFile(paths["opencode"]) as z:
         k={f".opencode/architecture-analyzer/knowledge/{Path(x).name}" for x in KNOWLEDGE}; req={"AGENTS.md","opencode.json","README.md","VERSION","MANIFEST.json",".opencode/architecture-analyzer/instructions.md",".opencode/architecture-analyzer/runtime-contract.json",*k}
         if set(z.namelist())!=req: raise SystemExit(f"OpenCode-innehåll avviker: {sorted(set(z.namelist())^req)}")
@@ -76,13 +92,13 @@ def validate(v,dist):
     if not delivery.is_file() or not sums.is_file(): raise SystemExit("Saknar delivery manifest eller checksummor")
     dm=json.loads(delivery.read_text(encoding="utf-8"))
     types={x.get("type") for x in dm.get("artifacts",[])}
-    required_types={"project_zip","custom_gpt_zip","chat_zip","claude_zip","opencode_zip"}
+    required_types={"project_zip","custom_gpt_zip","chat_zip","claude_zip","opencode_zip","plugin_zip"}
     if types!=required_types: raise SystemExit(f"Delivery artifact types avviker: {sorted(types)}")
     expected_sums={}
     for line in sums.read_text(encoding="utf-8").splitlines():
         h,name=line.split(None,1); expected_sums[name.strip()]=h
     for p in paths.values():
         if expected_sums.get(p.name)!=digest(p.read_bytes()): raise SystemExit(f"Checksum avviker: {p.name}")
-    print(f"OK: projektpaket och fyra runtime-distributioner validerade för {v}")
+    print(f"OK: projektpaket och fem runtime-distributioner validerade för {v}")
 def main(): a=args(); validate(ver(a.version),Path(a.dist).resolve())
 if __name__=="__main__": main()
