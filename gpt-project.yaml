@@ -27,9 +27,9 @@ analysis:
         activate_by_default: true
         reason: Local workspace and repository inspection are directly useful for source-code architecture analysis.
       - runtime_id: openai_plugin
-        suitability: reduced
-        activate_by_default: false
-        reason: Skills can package analysis guidance, but the runtime does not itself provide the repository workspace/tooling needed for full parity.
+        suitability: ready
+        activate_by_default: true
+        reason: Skills-first can carry the analysis contract and Knowledge, while repository/file access remains an explicit required host-runtime dependency.
 
 model_robustness:
   level: guided
@@ -176,8 +176,18 @@ runtime:
     runtime_root: .opencode/architecture-analyzer
     runtime_contract: .opencode/architecture-analyzer/runtime-contract.json
   openai_plugin:
-    enabled: false
-    role: assessed_reduced
+    enabled: true
+    role: peer_distribution
+    mode: skills_first
+    compatibility: ready_runtime_dependent
+    entrypoint: skills/architecture-analyzer/SKILL.md
+    file_input_dependency: required_host_runtime
+    workspace_dependency: required_host_runtime
+    shell_dependency: optional_host_runtime
+    code_execution_dependency: optional_host_runtime
+    persistent_state_required: false
+    mcp_generated: false
+    script_resources: none
 
 ci:
   enabled: true
@@ -190,7 +200,7 @@ release:
     version_source: release_tag
 
 migration:
-  target: gpt-builder-1.5.0
+  target: gpt-builder-1.5.1
   preserve_legacy_distribution_sources_until_replaced: true
 
 testing:
