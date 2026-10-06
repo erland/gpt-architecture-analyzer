@@ -96,17 +96,22 @@ def test_runtime_assessment_keeps_opencode_ready():
     candidates = {x["runtime_id"]: x for x in cfg["analysis"]["runtime"]["candidates"]}
     assert candidates["opencode"]["suitability"] == "ready"
     assert candidates["opencode"]["activate_by_default"] is True
-    assert candidates["openai_plugin"]["suitability"] == "reduced"
-    assert candidates["openai_plugin"]["activate_by_default"] is False
+    assert candidates["openai_plugin"]["suitability"] == "ready"
+    assert candidates["openai_plugin"]["activate_by_default"] is True
 
 
-def test_claude_and_opencode_are_active_peer_runtimes():
+def test_claude_opencode_and_plugin_are_active_peer_runtimes():
     cfg = yaml.safe_load((ROOT / "gpt-project.yaml").read_text(encoding="utf-8"))
     assert cfg["runtime"]["claude"]["enabled"] is True
     assert cfg["runtime"]["claude"]["mode"] == "claude_project"
     assert cfg["runtime"]["opencode"]["enabled"] is True
     assert cfg["runtime"]["opencode"]["mode"] == "opencode_workspace"
     assert cfg["runtime"]["opencode"]["runtime_root"] == ".opencode/architecture-analyzer"
+    assert cfg["runtime"]["openai_plugin"]["enabled"] is True
+    assert cfg["runtime"]["openai_plugin"]["mode"] == "skills_first"
+    assert cfg["runtime"]["openai_plugin"]["compatibility"] == "ready_runtime_dependent"
+    assert cfg["runtime"]["openai_plugin"]["mcp_generated"] is False
+    assert cfg["runtime"]["openai_plugin"]["script_resources"] == "none"
 
 
 def test_build_and_validation_cover_new_peer_distributions():
@@ -115,13 +120,15 @@ def test_build_and_validation_cover_new_peer_distributions():
     for marker in [
         "def build_claude(",
         "def build_opencode(",
+        "def build_plugin(",
         '("claude", build_claude',
         '("opencode", build_opencode',
+        '("plugin", build_plugin',
         'f"architecture-analyzer-{name}-v{version}.zip"',
         ".opencode/architecture-analyzer",
     ]:
         assert marker in build
-    for marker in ["claude_project", "opencode", "projektpaket och fyra runtime-distributioner"]:
+    for marker in ["claude_project", "opencode", "openai_plugin", "projektpaket och fem runtime-distributioner"]:
         assert marker in validate
 
 
@@ -136,11 +143,9 @@ def test_runtime_parity_model_covers_all_registered_peers():
     assert set(parity["compared_categories"]) == {
         "behavior", "capability", "artifact", "workspace_state", "tool"
     }
-    for runtime_id in {"chatgpt_chat", "chatgpt_custom", "claude_project", "opencode"}:
+    for runtime_id in {"chatgpt_chat", "chatgpt_custom", "claude_project", "opencode", "openai_plugin"}:
         assert parity["runtimes"][runtime_id]["active"] is True
         assert parity["runtimes"][runtime_id]["suitability"] == "ready"
-    assert parity["runtimes"]["openai_plugin"]["active"] is False
-    assert parity["runtimes"]["openai_plugin"]["suitability"] == "reduced"
 
 
 def test_release_pipeline_publishes_complete_distribution_set():
@@ -153,6 +158,7 @@ def test_release_pipeline_publishes_complete_distribution_set():
         "architecture-analyzer-custom-gpt-v${VERSION}.zip",
         "architecture-analyzer-claude-v${VERSION}.zip",
         "architecture-analyzer-opencode-v${VERSION}.zip",
+        "architecture-analyzer-plugin-v${VERSION}.zip",
         "dist/SHA256SUMS.txt",
         "dist/DELIVERY-MANIFEST.json",
     ]:
@@ -180,6 +186,7 @@ def test_final_documentation_matches_runtime_state():
     for marker in [
         "Claude Projects – ready, active",
         "OpenCode – ready, active",
+        "OpenAI Plugin – ready, active",
         "Runtime parity: `runtime-parity.yaml`",
     ]:
         assert marker in project

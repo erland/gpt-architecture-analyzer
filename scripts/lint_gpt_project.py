@@ -41,11 +41,9 @@ if cfg_path.is_file():
         if isinstance(item, dict)
     }
     check(set(candidates) == expected_runtimes, "All five peer runtimes must be assessed")
-    for runtime_id in ("chatgpt_chat", "chatgpt_custom", "claude_project", "opencode"):
+    for runtime_id in ("chatgpt_chat", "chatgpt_custom", "claude_project", "opencode", "openai_plugin"):
         check(candidates.get(runtime_id, {}).get("suitability") == "ready",
               f"{runtime_id} must be assessed ready")
-    check(candidates.get("openai_plugin", {}).get("suitability") == "reduced",
-          "openai_plugin must be explicitly reduced")
 
     for key in ("capabilities", "artifacts", "workspace_state", "tools"):
         check(isinstance(cfg.get(key), dict), f"Missing platform-neutral contract: {key}")

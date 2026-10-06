@@ -124,6 +124,79 @@ def build_opencode(base, version):
     (base / "README.md").write_text("# Architecture Analyzer – OpenCode\\n\\nExtract at the root of the repository/workspace to analyze. Runtime/reference files remain isolated under .opencode/architecture-analyzer/.\\n", encoding="utf-8")
     (base / "VERSION").write_text(version + "\n", encoding="utf-8"); write_manifest(base, "opencode", version, "AGENTS.md")
 
+
+def build_plugin(base, version):
+    skill = base / "skills" / "architecture-analyzer"
+    refs = skill / "references"
+    refs.mkdir(parents=True, exist_ok=True)
+    for rel in KNOWLEDGE:
+        shutil.copy2(ROOT / rel, refs / Path(rel).name)
+
+    canonical = CANONICAL_INSTRUCTIONS.read_text(encoding="utf-8").strip()
+    skill_text = """---
+name: architecture-analyzer
+description: Evidence-based source-code architecture analysis for one or more repositories, with grouped views, diagrams, risks and recommendations.
+metadata:
+  source: generated-from-canonical-project
+---
+
+# Architecture Analyzer
+
+## Runtime adapter
+
+- Repository or uploaded source files must be actually accessible to the host before repository analysis begins.
+- If repository/file access is unavailable, block the repository-analysis task and explain the missing capability; do not simulate inspection.
+- Only files actually read from the target repository may be used as source evidence.
+- Files under this skill's references directory, plugin manifests and runtime files are assistant resources and must never be treated as target-source evidence.
+- Shell and code execution may be used when the host provides them for inventory/search, but they are optional optimizations.
+- Persistent cross-session state is not required.
+- This plugin contains no runtime scripts or custom tools and generates no MCP wrapper.
+
+## Canonical behavior
+
+""" + canonical + """
+
+## References
+
+"""
+    for rel in KNOWLEDGE:
+        skill_text += f"- references/{Path(rel).name}\n"
+    (skill / "SKILL.md").write_text(skill_text, encoding="utf-8")
+
+    plugin = {
+        "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+        "name": "architecture-analyzer",
+        "version": version,
+        "description": "Evidence-based source-code architecture analysis with repository/file access supplied by the host runtime.",
+    }
+    (base / "plugin.json").write_text(json.dumps(plugin, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    contract = platform_contract("openai_plugin", version, {
+        "mode": "skills_first",
+        "compatibility": "ready_runtime_dependent",
+        "entrypoint": "skills/architecture-analyzer/SKILL.md",
+        "repository_file_access": "required_host_runtime",
+        "workspace_access": "required_host_runtime",
+        "shell": "optional_host_runtime",
+        "code_execution": "optional_host_runtime",
+        "persistent_state_required": False,
+        "mcp_generated": False,
+        "script_resources": [],
+        "target_source_must_remain_separate_from_plugin_resources": True,
+        "fallback_policy": {
+            "without_repository_access": "block_repository_analysis_do_not_simulate",
+        },
+    })
+    (base / "runtime-contract.json").write_text(json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (base / "README.md").write_text(
+        "# Architecture Analyzer – OpenAI Plugin\n\n"
+        "Skills-first peer runtime. Repository/file access is a required host capability for the primary analysis task. "
+        "Plugin resources are never target-source evidence. No runtime scripts or MCP wrapper are included.\n",
+        encoding="utf-8",
+    )
+    (base / "VERSION").write_text(version + "\n", encoding="utf-8")
+    write_manifest(base, "openai_plugin", version, "plugin.json")
+
+
 def build_project_package(base, version):
     include = [
         "canonical", "knowledge", "portable", "docs", "schemas", "tests", "scripts",
@@ -170,6 +243,7 @@ def main():
             ("chat", build_portable, "chat_zip"),
             ("claude", build_claude, "claude_zip"),
             ("opencode", build_opencode, "opencode_zip"),
+            ("plugin", build_plugin, "plugin_zip"),
         ]:
             root = t / name; root.mkdir(); fn(root, version)
             target = out / f"architecture-analyzer-{name}-v{version}.zip"

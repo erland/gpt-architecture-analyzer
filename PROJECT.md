@@ -24,9 +24,9 @@ Registered peer candidates:
 - ChatGPT Custom – ready, active
 - Claude Projects – ready, active
 - OpenCode – ready, active
-- OpenAI Plugin – reduced, inactive
+- OpenAI Plugin – ready, active
 
-OpenCode is considered a natural peer for this project because direct local repository/workspace inspection is part of the core use case.
+OpenCode is considered a natural peer because direct local repository/workspace inspection is useful for the core use case. OpenAI Plugin is also active as a skills-first peer runtime, but repository/file access is a required host capability; without it the primary analysis task must block rather than simulate inspection.
 
 ## Project sources
 

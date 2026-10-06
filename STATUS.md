@@ -2,7 +2,7 @@
 
 ## Summary
 
-Migration to **GPT Builder 1.5.0** is complete.
+Migration baseline is updated to **GPT Builder 1.5.1** with OpenAI Plugin support.
 
 The existing Architecture Analyzer behavior and both current distributions are being preserved while a modern canonical/project-contract layer is introduced.
 
@@ -20,7 +20,7 @@ The existing Architecture Analyzer behavior and both current distributions are b
 - ChatGPT Custom: ready / active
 - Claude Projects: ready / active
 - OpenCode: ready / active
-- OpenAI Plugin: reduced / inactive
+- OpenAI Plugin: ready / active (`ready_runtime_dependent`)
 
 ## Verification of step 1
 
@@ -36,17 +36,17 @@ CI passed the four-runtime build and validation. Claude Projects uses the canoni
 
 ## Verification of step 4
 
-CI passed generalized runtime parity across all five registered runtimes. The active release set now contains a project ZIP plus Chat, Custom GPT, Claude Projects and OpenCode ZIPs, together with `SHA256SUMS.txt` and `DELIVERY-MANIFEST.json`. GitHub Release uploads the complete set explicitly and uses the release tag as the authoritative version source.
+CI passed generalized runtime parity across all five registered runtimes. The active release set now contains a project ZIP plus Chat, Custom GPT, Claude Projects, OpenCode and OpenAI Plugin ZIPs, together with `SHA256SUMS.txt` and `DELIVERY-MANIFEST.json`. GitHub Release uploads the complete set explicitly and uses the release tag as the authoritative version source.
 
 ## Verification of step 5
 
-The final CI run passed project lint, deterministic regression tests, instruction-adherence validation, project plus four runtime builds, distribution validation, runtime parity, release readiness, project hygiene, workflow parity, reproducible delivery and artifact upload.
+The final CI run passed project lint, deterministic regression tests, instruction-adherence validation, project plus five runtime builds, distribution validation, runtime parity, release readiness, project hygiene, workflow parity, reproducible delivery and artifact upload.
 
 Documentation drift found during the final review was corrected and regression-tested.
 
 ## Current state
 
-The project is in **maintenance mode**. The migration is complete and the PR is ready to merge.
+The GPT Builder 1.5.1 plugin adjustment is implemented and validated by the current PR. After green CI the project returns to maintenance mode.
 
 ## Blockers
 

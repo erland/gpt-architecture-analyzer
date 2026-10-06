@@ -94,6 +94,7 @@ jobs:
             "dist/architecture-analyzer-custom-gpt-v${VERSION}.zip" \
             "dist/architecture-analyzer-claude-v${VERSION}.zip" \
             "dist/architecture-analyzer-opencode-v${VERSION}.zip" \
+            "dist/architecture-analyzer-plugin-v${VERSION}.zip" \
             dist/SHA256SUMS.txt \
             dist/DELIVERY-MANIFEST.json \
             --clobber

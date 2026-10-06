@@ -41,7 +41,7 @@ if not delivery_path.is_file():
     errors.append("DELIVERY-MANIFEST.json missing")
 else:
     delivery = json.loads(delivery_path.read_text(encoding="utf-8"))
-    required_types = {"project_zip", "chat_zip", "custom_gpt_zip", "claude_zip", "opencode_zip"}
+    required_types = {"project_zip", "chat_zip", "custom_gpt_zip", "claude_zip", "opencode_zip", "plugin_zip"}
     types = {item.get("type") for item in delivery.get("artifacts", [])}
     if types != required_types:
         errors.append(f"delivery artifact types differ: {sorted(types)}")
@@ -62,6 +62,7 @@ expected = [
     f"architecture-analyzer-custom-gpt-v{version}.zip",
     f"architecture-analyzer-claude-v{version}.zip",
     f"architecture-analyzer-opencode-v{version}.zip",
+    f"architecture-analyzer-plugin-v{version}.zip",
 ]
 for name in expected:
     path = ROOT / "dist" / name

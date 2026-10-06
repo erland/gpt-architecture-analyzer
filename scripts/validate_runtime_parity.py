@@ -16,8 +16,8 @@ EXPECTED = {
     "opencode",
     "openai_plugin",
 }
-ACTIVE = {"chatgpt_chat", "chatgpt_custom", "claude_project", "opencode"}
-INACTIVE = {"openai_plugin"}
+ACTIVE = {"chatgpt_chat", "chatgpt_custom", "claude_project", "opencode", "openai_plugin"}
+INACTIVE = set()
 CATEGORIES = {"behavior", "capability", "artifact", "workspace_state", "tool"}
 errors: list[str] = []
 
@@ -61,6 +61,7 @@ specs = {
     "chatgpt_custom": (f"architecture-analyzer-custom-gpt-v{version}.zip", "runtime-contract.json", "gpt-instructions.txt"),
     "claude_project": (f"architecture-analyzer-claude-v{version}.zip", "project/runtime-contract.json", "project/instructions.md"),
     "opencode": (f"architecture-analyzer-opencode-v{version}.zip", ".opencode/architecture-analyzer/runtime-contract.json", ".opencode/architecture-analyzer/instructions.md"),
+    "openai_plugin": (f"architecture-analyzer-plugin-v{version}.zip", "runtime-contract.json", "skills/architecture-analyzer/SKILL.md"),
 }
 canonical = (ROOT / "canonical/instructions.md").read_bytes()
 
@@ -79,7 +80,14 @@ for runtime_id, (name, contract_path, instruction_path) in specs.items():
             for key in ("capabilities", "artifacts", "workspace_state", "tools"):
                 check(contract.get(key) == cfg.get(key), f"{runtime_id} {key} contract drift")
         if instruction_path in names:
-            check(z.read(instruction_path) == canonical, f"{runtime_id} canonical instruction drift")
+            if runtime_id == "openai_plugin":
+                instruction = z.read(instruction_path).decode("utf-8")
+                check(canonical.decode("utf-8").strip() in instruction, "openai_plugin canonical instruction drift")
+                adapter = contract.get("adapter", {}) if contract_path in names else {}
+                check(adapter.get("repository_file_access") == "required_host_runtime", "openai_plugin repository gate missing")
+                check(adapter.get("target_source_must_remain_separate_from_plugin_resources") is True, "openai_plugin evidence separation missing")
+            else:
+                check(z.read(instruction_path) == canonical, f"{runtime_id} canonical instruction drift")
 
 report = {
     "result": "PASS" if not errors else "FAIL",
